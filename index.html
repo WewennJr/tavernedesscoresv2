@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compteur de Points - Jeux de Cartes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .game-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.2s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        .player-list {
+            margin-top: 20px;
+        }
+
+        .player-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .score-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .score-table th, .score-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .score-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .score-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background: #e9ecef !important;
+            font-size: 1.2em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .settings-icon {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .settings-icon:hover {
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="settings-icon" onclick="showSettings()">⚙️</div>
+            <h1>🎴 Compteur de Points</h1>
+            <p>Simplifiez vos parties en famille</p>
+        </div>
+
+        <div class="content">
+            <!-- Accueil -->
+            <div id="home-screen">
+                <h2>Choisissez votre jeu</h2>
+                <div class="game-grid">
+                    <div class="game-card" onclick="startGame('tarot')">
+                        <h3>🃏 Tarot</h3>
+                        <p>3 à 5 joueurs</p>
+                    </div>
+                    <div class="game-card" onclick="startGame('belote')">
+                        <h3>🂡 Belote</h3>
+                        <p>4 joueurs (2 équipes)</p>
+                    </div>
+                    <div class="game-card" onclick="startGame('coinche')">
+                        <h3>🎯 Coinche</h3>
+                        <p>4 joueurs (2 équipes)</p>
+                    </div>
+                    <div class="game-card" onclick="startGame('simple')">
+                        <h3>📊 Compteur Simple</h3>
+                        <p>Score libre</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Écran de jeu -->
+            <div id="game-screen" class="hidden">
+                <span class="back-btn" onclick="goHome()">← Retour</span>
+                <h2 id="game-title"></h2>
+                <button class="btn" onclick="showNewRoundModal()">➕ Nouvelle Manche</button>
+                <button class="btn btn-secondary" onclick="resetGame()">🔄 Réinitialiser</button>
+                
+                <div id="score-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nouvelle Manche -->
+    <div id="new-round-modal" class="modal">
+        <div class="modal-content">
+            <h2>Nouvelle Manche</h2>
+            <div id="round-form"></div>
+            <button class="btn" onclick="submitRound()">Valider</button>
+            <button class="btn btn-danger" onclick="closeModal('new-round-modal')">Annuler</button>
+        </div>
+    </div>
+
+    <!-- Modal Paramètres -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>⚙️ Paramètres</h2>
+            
+            <h3>Joueurs</h3>
+            <div class="input-group">
+                <input type="text" id="new-player-name" placeholder="Nom du joueur">
+                <button class="btn" onclick="addPlayer()">Ajouter</button>
+            </div>
+            
+            <div class="player-list" id="player-list"></div>
+            
+            <button class="btn btn-secondary" onclick="closeModal('settings-modal')">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        // État de l'application
+        let appState = {
+            players: ['Joueur 1', 'Joueur 2', 'Joueur 3', 'Joueur 4'],
+            currentGame: null,
+            rounds: [],
+            scores: {}
+        };
+
+        // Chargement des données au démarrage
+        function loadData() {
+            const saved = sessionStorage.getItem('scoreTrackerData');
+            if (saved) {
+                appState = JSON.parse(saved);
+            }
+            updatePlayerList();
+        }
+
+        // Sauvegarde des données
+        function saveData() {
+            sessionStorage.setItem('scoreTrackerData', JSON.stringify(appState));
+        }
+
+        // Navigation
+        function goHome() {
+            document.getElementById('home-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            appState.currentGame = null;
+            saveData();
+        }
+
+        function startGame(gameType) {
+            appState.currentGame = gameType;
+            appState.rounds = [];
+            appState.scores = {};
+            
+            appState.players.forEach(p => appState.scores[p] = 0);
+            
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            const titles = {
+                tarot: '🃏 Tarot',
+                belote: '🂡 Belote',
+                coinche: '🎯 Coinche',
+                simple: '📊 Compteur Simple'
+            };
+            document.getElementById('game-title').textContent = titles[gameType];
+            
+            updateScoreDisplay();
+            saveData();
+        }
+
+        function resetGame() {
+            if (confirm('Voulez-vous vraiment réinitialiser la partie ?')) {
+                appState.rounds = [];
+                appState.scores = {};
+                appState.players.forEach(p => appState.scores[p] = 0);
+                updateScoreDisplay();
+                saveData();
+            }
+        }
+
+        // Gestion des joueurs
+        function addPlayer() {
+            const input = document.getElementById('new-player-name');
+            const name = input.value.trim();
+            if (name && !appState.players.includes(name)) {
+                appState.players.push(name);
+                appState.scores[name] = 0;
+                input.value = '';
+                updatePlayerList();
+                saveData();
+            }
+        }
+
+        function removePlayer(name) {
+            if (confirm(`Supprimer ${name} ?`)) {
+                appState.players = appState.players.filter(p => p !== name);
+                delete appState.scores[name];
+                updatePlayerList();
+                saveData();
+            }
+        }
+
+        function updatePlayerList() {
+            const list = document.getElementById('player-list');
+            list.innerHTML = appState.players.map(p => `
+                <div class="player-item">
+                    <span>${p}</span>
+                    <button class="btn btn-danger" onclick="removePlayer('${p}')">Supprimer</button>
+                </div>
+            `).join('');
+        }
+
+        // Modals
+        function showSettings() {
+            updatePlayerList();
+            document.getElementById('settings-modal').style.display = 'block';
+        }
+
+        function showNewRoundModal() {
+            const form = document.getElementById('round-form');
+            
+            if (appState.currentGame === 'tarot') {
+                form.innerHTML = `
+                    <div class="input-group">
+                        <label>Donneur</label>
+                        <select id="dealer">
+                            ${appState.players.map(p => `<option value="${p}">${p}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Preneur</label>
+                        <select id="taker">
+                            ${appState.players.map(p => `<option value="${p}">${p}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Contrat</label>
+                        <select id="contract">
+                            <option value="petite">Petite</option>
+                            <option value="garde">Garde</option>
+                            <option value="garde-sans">Garde Sans</option>
+                            <option value="garde-contre">Garde Contre</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Points réalisés</label>
+                        <input type="number" id="points" value="41" min="0" max="91">
+                    </div>
+                    <div class="input-group">
+                        <label>Bouts</label>
+                        <input type="number" id="bouts" value="1" min="0" max="3">
+                    </div>
+                    <div class="input-group">
+                        <label>Petit au bout (optionnel)</label>
+                        <select id="petit-bout">
+                            <option value="none">Non</option>
+                            <option value="attaque">Attaque</option>
+                            <option value="defense">Défense</option>
+                        </select>
+                    </div>
+                `;
+            } else if (appState.currentGame === 'belote' || appState.currentGame === 'coinche') {
+                form.innerHTML = `
+                    <div class="input-group">
+                        <label>Équipe 1 (${appState.players[0]} & ${appState.players[2]})</label>
+                        <input type="number" id="team1-score" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Équipe 2 (${appState.players[1]} & ${appState.players[3]})</label>
+                        <input type="number" id="team2-score" value="0">
+                    </div>
+                `;
+            } else {
+                form.innerHTML = appState.players.map(p => `
+                    <div class="input-group">
+                        <label>${p}</label>
+                        <input type="number" id="score-${p}" value="0">
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('new-round-modal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Soumission de manche
+        function submitRound() {
+            if (appState.currentGame === 'tarot') {
+                submitTarotRound();
+            } else if (appState.currentGame === 'belote' || appState.currentGame === 'coinche') {
+                submitBeloteRound();
+            } else {
+                submitSimpleRound();
+            }
+            
+            updateScoreDisplay();
+            closeModal('new-round-modal');
+            saveData();
+        }
+
+        function submitTarotRound() {
+            const taker = document.getElementById('taker').value;
+            const contract = document.getElementById('contract').value;
+            const points = parseInt(document.getElementById('points').value);
+            const bouts = parseInt(document.getElementById('bouts').value);
+            const petitBout = document.getElementById('petit-bout').value;
+            
+            const required = [56, 51, 41, 36][bouts];
+            const diff = points - required;
+            
+            const multipliers = {
+                'petite': 1,
+                'garde': 2,
+                'garde-sans': 4,
+                'garde-contre': 6
+            };
+            
+            let baseScore = (25 + diff) * multipliers[contract];
+            
+            if (petitBout !== 'none') {
+                baseScore += (petitBout === 'attaque' ? 10 : -10) * multipliers[contract];
+            }
+            
+            const numDefenders = appState.players.length - 1;
+            
+            if (diff >= 0) {
+                appState.scores[taker] += baseScore * numDefenders;
+                appState.players.forEach(p => {
+                    if (p !== taker) appState.scores[p] -= baseScore;
+                });
+            } else {
+                appState.scores[taker] -= baseScore * numDefenders;
+                appState.players.forEach(p => {
+                    if (p !== taker) appState.scores[p] += baseScore;
+                });
+            }
+            
+            appState.rounds.push({
+                type: 'tarot',
+                taker,
+                contract,
+                points,
+                won: diff >= 0,
+                score: baseScore
+            });
+        }
+
+        function submitBeloteRound() {
+            const team1Score = parseInt(document.getElementById('team1-score').value);
+            const team2Score = parseInt(document.getElementById('team2-score').value);
+            
+            appState.scores[appState.players[0]] += team1Score;
+            appState.scores[appState.players[2]] += team1Score;
+            appState.scores[appState.players[1]] += team2Score;
+            appState.scores[appState.players[3]] += team2Score;
+            
+            appState.rounds.push({
+                type: 'belote',
+                team1: team1Score,
+                team2: team2Score
+            });
+        }
+
+        function submitSimpleRound() {
+            appState.players.forEach(p => {
+                const score = parseInt(document.getElementById(`score-${p}`).value);
+                appState.scores[p] += score;
+            });
+            
+            appState.rounds.push({ type: 'simple' });
+        }
+
+        // Affichage des scores
+        function updateScoreDisplay() {
+            const display = document.getElementById('score-display');
+            
+            let html = '<table class="score-table"><thead><tr><th>Manche</th>';
+            appState.players.forEach(p => html += `<th>${p}</th>`);
+            html += '</tr></thead><tbody>';
+            
+            appState.rounds.forEach((round, idx) => {
+                html += `<tr><td>Manche ${idx + 1}</td>`;
+                
+                if (round.type === 'tarot') {
+                    appState.players.forEach(p => {
+                        if (p === round.taker) {
+                            html += `<td style="background: ${round.won ? '#d4edda' : '#f8d7da'}">
+                                ${round.won ? '+' : ''}${round.score * (appState.players.length - 1)}
+                            </td>`;
+                        } else {
+                            html += `<td>${round.won ? '-' : '+'}${round.score}</td>`;
+                        }
+                    });
+                } else if (round.type === 'belote') {
+                    html += `<td>${round.team1}</td><td>${round.team2}</td><td>${round.team1}</td><td>${round.team2}</td>`;
+                } else {
+                    appState.players.forEach(p => html += `<td>-</td>`);
+                }
+                
+                html += '</tr>';
+            });
+            
+            html += '<tr class="total-row"><td>TOTAL</td>';
+            appState.players.forEach(p => {
+                html += `<td>${appState.scores[p] || 0}</td>`;
+            });
+            html += '</tr></tbody></table>';
+            
+            display.innerHTML = html;
+        }
+
+        // Initialisation
+        loadData();
+    </script>
+</body>
+</html>
