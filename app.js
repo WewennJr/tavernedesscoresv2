@@ -187,7 +187,7 @@ const app = {
             list.innerHTML = this.state.allPlayers.map(p => `
                 <div class="player-item">
                     <span>${p}</span>
-                    <button class="btn btn-danger btn-small" onclick="app.removePlayer('${p}')">Supprimer</button>
+                    <button class="btn btn-danger btn-small" onclick="app.removePlayer('${p.replace(/'/g, "\\'")}')">Supprimer</button>
                 </div>
             `).join('');
         }
@@ -261,21 +261,52 @@ const app = {
         
         html += '<th>Détails</th></tr></thead><tbody>';
         
-        // Affichage des manches
+        // Affichage des manches avec scores cumulés
+        let cumulativeScores = {};
+        this.state.activePlayers.forEach(p => cumulativeScores[p] = 0);
+        
         this.state.rounds.forEach((round, idx) => {
             html += `<tr><td><strong>Manche ${idx + 1}</strong></td>`;
             
+            // Recalcul des scores cumulés jusqu'à cette manche
+            if (idx === 0) {
+                // Première manche - on reconstruit depuis zéro
+                this.state.activePlayers.forEach(p => cumulativeScores[p] = 0);
+                
+                // On refait le calcul de cette manche
+                const tempScores = {};
+                this.state.activePlayers.forEach(p => tempScores[p] = 0);
+                
+                if (game.hasTeams) {
+                    game.calculateRound(this.getRoundFormData(round), this.state.activePlayers, tempScores, this.state.teams);
+                } else {
+                    game.calculateRound(this.getRoundFormData(round), this.state.activePlayers, tempScores);
+                }
+                
+                this.state.activePlayers.forEach(p => cumulativeScores[p] = tempScores[p]);
+            } else {
+                // Pour les autres manches, on ajoute les deltas
+                const tempScores = {};
+                this.state.activePlayers.forEach(p => tempScores[p] = 0);
+                
+                if (game.hasTeams) {
+                    game.calculateRound(this.getRoundFormData(round), this.state.activePlayers, tempScores, this.state.teams);
+                } else {
+                    game.calculateRound(this.getRoundFormData(round), this.state.activePlayers, tempScores);
+                }
+                
+                this.state.activePlayers.forEach(p => cumulativeScores[p] += tempScores[p]);
+            }
+            
             if (game.hasTeams) {
-                const team1Total = this.state.teams[0].reduce((sum, p) => sum + (this.state.scores[p] || 0), 0);
-                const team2Total = this.state.teams[1].reduce((sum, p) => sum + (this.state.scores[p] || 0), 0);
+                const team1Total = this.state.teams[0].reduce((sum, p) => sum + cumulativeScores[p], 0);
+                const team2Total = this.state.teams[1].reduce((sum, p) => sum + cumulativeScores[p], 0);
                 
                 html += `<td>${team1Total}</td>`;
                 html += `<td>${team2Total}</td>`;
             } else {
-                // Calcul des scores intermédiaires pour cette manche
-                const scoresAtRound = this.calculateScoresAtRound(idx);
                 this.state.activePlayers.forEach(p => {
-                    html += `<td>${scoresAtRound[p]}</td>`;
+                    html += `<td>${cumulativeScores[p]}</td>`;
                 });
             }
             
@@ -301,20 +332,39 @@ const app = {
         display.innerHTML = html;
     },
     
-    calculateScoresAtRound(roundIndex) {
-        const tempScores = {};
-        this.state.activePlayers.forEach(p => tempScores[p] = 0);
+    // Reconstruit les données de formulaire depuis une manche sauvegardée
+    getRoundFormData(round) {
+        const formData = {};
         
-        const game = GAMES_CONFIG[this.state.selectedGame];
-        
-        // Recalcul jusqu'à la manche spécifiée
-        for (let i = 0; i <= roundIndex; i++) {
-            const round = this.state.rounds[i];
-            // Cette partie nécessiterait de stocker les deltas par manche
-            // Pour simplifier, on affiche juste le total actuel
+        // Pour chaque type de jeu, on reconstruit les données nécessaires
+        switch(round.type) {
+            case 'tarot':
+                formData.taker = round.taker;
+                formData.contract = round.contract;
+                formData.points = round.points;
+                formData.bouts = round.bouts;
+                formData['petit-bout'] = round.petitBout;
+                formData.poignee = round.poignee;
+                break;
+            case 'belote':
+                formData['team1-score'] = round.team1;
+                formData['team2-score'] = round.team2;
+                break;
+            case 'coinche':
+                formData['taking-team'] = round.takingTeam;
+                formData.contract = round.contract;
+                formData.points = round.points;
+                formData.coinche = round.coinche;
+                break;
+            case 'rami':
+            case 'rummikub':
+            case 'uno':
+            case '8americain':
+                formData.winner = round.winner;
+                break;
         }
         
-        return this.state.scores;
+        return formData;
     }
 };
 

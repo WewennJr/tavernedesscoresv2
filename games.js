@@ -80,12 +80,10 @@ const GAMES_CONFIG = {
             
             let baseScore = (25 + Math.abs(diff)) * multipliers[contract];
             
-            // Petit au bout
             if (petitBout !== 'none') {
                 baseScore += (petitBout === 'attaque' ? 10 : -10) * multipliers[contract];
             }
             
-            // Poignée
             const poigneeBonus = {
                 'simple-attaque': 20,
                 'simple-defense': -20,
@@ -266,7 +264,7 @@ const GAMES_CONFIG = {
             let totalPenalty = 0;
             
             players.forEach(p => {
-                const points = parseInt(formData[`score-${p}`]);
+                const points = parseInt(formData[`score-${p}`]) || 0;
                 if (p !== winner) {
                     scores[p] -= points;
                     totalPenalty += points;
@@ -305,7 +303,7 @@ const GAMES_CONFIG = {
         
         calculateRound: (formData, players, scores) => {
             players.forEach(p => {
-                const amount = parseInt(formData[`score-${p}`]);
+                const amount = parseInt(formData[`score-${p}`]) || 0;
                 scores[p] += amount;
             });
             
@@ -344,7 +342,7 @@ const GAMES_CONFIG = {
             let totalPenalty = 0;
             
             players.forEach(p => {
-                const points = parseInt(formData[`score-${p}`]);
+                const points = parseInt(formData[`score-${p}`]) || 0;
                 if (p !== winner) {
                     scores[p] -= points;
                     totalPenalty += points;
@@ -378,7 +376,7 @@ const GAMES_CONFIG = {
             </div>
             ${players.map(p => `
                 <div class="input-group">
-                    <label>Cartes restantes pour ${p}</label>
+                    <label>Valeur des cartes restantes pour ${p}</label>
                     <input type="number" id="cards-${p}" value="0" min="0">
                 </div>
             `).join('')}
@@ -392,7 +390,7 @@ const GAMES_CONFIG = {
             let totalPoints = 0;
             
             players.forEach(p => {
-                const cards = parseInt(formData[`cards-${p}`]);
+                const cards = parseInt(formData[`cards-${p}`]) || 0;
                 if (p !== winner) {
                     totalPoints += cards;
                 }
@@ -430,7 +428,7 @@ const GAMES_CONFIG = {
         
         calculateRound: (formData, players, scores) => {
             players.forEach(p => {
-                scores[p] = parseInt(formData[`score-${p}`]);
+                scores[p] = parseInt(formData[`score-${p}`]) || 0;
             });
             
             return {
@@ -471,7 +469,7 @@ const GAMES_CONFIG = {
             let totalCards = 0;
             
             players.forEach(p => {
-                const cards = parseInt(formData[`cards-${p}`]);
+                const cards = parseInt(formData[`cards-${p}`]) || 0;
                 if (p !== winner) {
                     scores[p] -= cards;
                     totalCards += cards;
@@ -507,7 +505,7 @@ const GAMES_CONFIG = {
         
         calculateRound: (formData, players, scores) => {
             players.forEach(p => {
-                const score = parseInt(formData[`score-${p}`]);
+                const score = parseInt(formData[`score-${p}`]) || 0;
                 scores[p] += score;
             });
             
@@ -517,4 +515,4 @@ const GAMES_CONFIG = {
             };
         }
     }
-}
+};
