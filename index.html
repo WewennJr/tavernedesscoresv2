@@ -476,32 +476,213 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
             .game-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+
+            .game-card {
+                padding: 20px 12px;
+            }
+
+            .game-card h3 {
+                font-size: 1.2em;
+            }
+
+            .game-card p {
+                font-size: 0.85em;
             }
             
             .container {
                 margin: 0;
                 border-radius: 0;
+                border: none;
+            }
+
+            .header {
+                padding: 25px 15px;
+                border-radius: 0;
             }
 
             .header h1 {
-                font-size: 1.8em;
+                font-size: 1.6em;
+                letter-spacing: 1px;
+            }
+
+            .header p {
+                font-size: 0.95em;
             }
 
             .header::before,
             .header::after {
-                font-size: 2em;
+                font-size: 1.5em;
+                left: 10px;
             }
-            
-            .score-table th, .score-table td {
-                padding: 10px 5px;
-                font-size: 0.9em;
+
+            .header::after {
+                right: 10px;
+                left: auto;
+            }
+
+            .settings-icon {
+                top: 20px;
+                right: 15px;
+                font-size: 1.5em;
+            }
+
+            .content {
+                padding: 15px;
             }
 
             .category h3 {
                 font-size: 1.4em;
+                margin-bottom: 15px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 1em;
+                margin: 3px;
+            }
+
+            .modal-content {
+                margin: 20px 10px;
+                padding: 20px;
+                max-height: 90vh;
+            }
+
+            .modal-content h2 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .input-group label {
+                font-size: 1em;
+            }
+
+            .input-group input,
+            .input-group select {
+                padding: 10px;
+                font-size: 0.95em;
+            }
+            
+            .score-table {
+                font-size: 0.85em;
+            }
+
+            .score-table th, 
+            .score-table td {
+                padding: 8px 4px;
+                font-size: 0.85em;
+            }
+
+            .score-table th {
+                font-size: 0.9em;
+            }
+
+            .total-row {
+                font-size: 1.1em;
+            }
+
+            .round-details {
+                font-size: 0.8em;
+                padding: 6px;
+            }
+
+            .player-checkbox {
+                padding: 10px;
+                margin: 6px 0;
+            }
+
+            .player-checkbox input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                margin-right: 8px;
+            }
+
+            .team-section {
+                padding: 15px;
+                margin: 15px 0;
+            }
+
+            .team-section h3 {
+                font-size: 1.2em;
+            }
+
+            .player-item {
+                padding: 12px;
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .back-btn {
+                font-size: 1em;
+                margin-bottom: 15px;
+            }
+
+            .info-box,
+            .warning-box,
+            .success-box {
+                padding: 12px;
+                margin: 12px 0;
+                font-size: 0.9em;
+            }
+
+            /* Amélioration du scroll horizontal sur les tableaux */
+            .score-table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Message d'aide pour le scroll */
+            .score-table::after {
+                content: '← Glissez pour voir plus →';
+                display: block;
+                text-align: center;
+                padding: 10px;
+                font-size: 0.8em;
+                color: #FFA500;
+                font-style: italic;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .game-card {
+                padding: 18px 10px;
+            }
+
+            .game-card h3 {
+                font-size: 1.1em;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.95em;
+            }
+
+            .category h3 {
+                font-size: 1.2em;
+            }
+
+            .score-table th,
+            .score-table td {
+                padding: 6px 3px;
+                font-size: 0.8em;
             }
         }
 
