@@ -52,8 +52,8 @@ Le site fonctionne immédiatement sans installation ! Ouvrez simplement `index.h
 
 1. **Fork ou clone ce repo**
 ```bash
-git clone https://github.com/wewennjr/tavernedesscores.git
-cd tavernedesscores
+git clone https://github.com/wewennjr/tavernedesscoresv2.git
+cd tavernedesscoresv2
 ```
 
 2. **Push vers votre repo GitHub**
@@ -67,7 +67,7 @@ git push origin main
    - Allez dans **Settings** → **Pages**
    - Sélectionnez la branche `main` et dossier `/root`
    - Cliquez sur **Save**
-   - Votre site sera accessible à `https://votre-username.github.io/tavernedesscores/`
+   - Votre site sera accessible à `https://votre-username.github.io/tavernedesscoresv2/`
 
 ### Hébergement local
 ```bash
@@ -123,7 +123,7 @@ Aucune dépendance externe ! Le site fonctionne 100% en local.
 ## 📊 Structure du Code
 
 ```
-tavernedesscores/
+tavernedesscoresv2/
 ├── index.html          # Application complète (HTML + CSS + JS)
 ├── README.md           # Ce fichier
 └── LICENSE             # Licence MIT
@@ -152,7 +152,7 @@ Les contributions sont les bienvenues !
 
 ## 🐛 Bugs Connus
 
-Aucun bug connu pour le moment ! Si vous en trouvez, merci d'ouvrir une [issue](https://github.com/wewennjr/tavernedesscores/issues).
+Aucun bug connu pour le moment ! Si vous en trouvez, merci d'ouvrir une [issue](https://github.com/wewennjr/tavernedesscoresv2/issues).
 
 ## 📝 Changelog
 
@@ -181,8 +181,8 @@ Vous êtes libre de :
 
 ## 💬 Contact & Support
 
-- **GitHub Issues** : [Signaler un bug](https://github.com/wewennjr/tavernedesscores/issues)
-- **Discussions** : [Proposer des idées](https://github.com/wewennjr/tavernedesscores/discussions)
+- **GitHub Issues** : [Signaler un bug](https://github.com/wewennjr/tavernedesscoresv2/issues)
+- **Discussions** : [Proposer des idées](https://github.com/wewennjr/tavernedesscoresv2/discussions)
 
 ## 🌟 Remerciements
 
